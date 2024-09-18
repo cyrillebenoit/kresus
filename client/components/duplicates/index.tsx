@@ -191,8 +191,14 @@ const Duplicates = () => {
     }
 
     const mergeAll = useCallback(async () => {
+        const removedElements = new Set();
+        // For each duplicate detected
         for (const pair of pairs) {
-            await dispatch(BanksStore.mergeTransactions(pair[0], pair[1]));
+            // Ensure neither the element to keep nor to remove has not been removed by a previous duplicate detection
+            if (!removedElements.has(pair[0].id) && !removedElements.has(pair[1].id)) {
+                await dispatch(BanksStore.mergeTransactions(pair[0], pair[1]));
+                removedElements.add(pair[1].id);
+            }
         }
     }, [dispatch, pairs]);
 
