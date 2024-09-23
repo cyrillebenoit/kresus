@@ -27,6 +27,7 @@ import './duplicates.css';
 import { useGenericError } from '../../hooks';
 
 import DiscoveryMessage from '../ui/discovery-message';
+import MergeAll from './merge-all';
 
 function debug(text: string) {
     return dbg(`Similarity Component - ${text}`);
@@ -190,27 +191,13 @@ const Duplicates = () => {
         });
     }
 
-    const mergeAll = useCallback(async () => {
-        const removedElements = new Set();
-        // For each duplicate detected
-        for (const pair of pairs) {
-            // Ensure neither the element to keep nor to remove has not been removed by a previous duplicate detection
-            if (!removedElements.has(pair[0].id) && !removedElements.has(pair[1].id)) {
-                await dispatch(BanksStore.mergeTransactions(pair[0], pair[1]));
-                removedElements.add(pair[1].id);
-            }
-        }
-    }, [dispatch, pairs]);
-
     return (
         <React.Fragment>
             <p className="right-align">
                 <DefaultParameters />
             </p>
             <p className="right-align">
-                <button className="btn warning" onClick={mergeAll}>
-                    <span>{$t('client.general.merge_all')}</span>
-                </button>
+                <MergeAll pairs={pairs} />
             </p>
 
             <div>
